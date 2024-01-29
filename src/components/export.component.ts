@@ -5,7 +5,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { download, record } from "../util";
+import { MatSliderModule } from '@angular/material/slider';
+import { canvasToBlob, download, record } from "../util";
 import { LottiePlayer } from "./lottie-player.component";
 
 export class Format {
@@ -33,7 +34,8 @@ export interface VideoExport extends ExportOptions {
 }
 
 export interface ImageExport extends ExportOptions {
-
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob#quality
+  quality?: number
 }
 
 const videoExports: VideoExport[] = [
@@ -61,12 +63,18 @@ const imageExports: ImageExport[] = [
     width: 200,
     height: 200,
   },
+  {
+    format: new Format('jpeg', 'image/jpeg', 'jpeg'),
+    width: 200,
+    height: 200,
+    quality: 0.95
+  },
 ]
 
 @Component({
   selector: 'export-form',
   standalone: true,
-  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf],
+  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf, MatSliderModule],
   templateUrl: './export.component.html',
 })
 export class ExportForm {
@@ -83,6 +91,10 @@ export class ExportForm {
     this.selectedExport = this.exports[0];
   }
 
+  get canvas() {
+    return this.player?.container?.nativeElement.getElementsByTagName('canvas')[0];
+  }
+
   selectFormat(value: string) {
     this.selectedExport = this.exports.find((e) => e.format.value == value) ?? this.selectedExport;
   }
@@ -91,7 +103,7 @@ export class ExportForm {
     if (this.isVideoExport(this.selectedExport)) {
       this.exportVideo(this.selectedExport)
     } else {
-      // TODO
+      this.exportImage(this.selectedExport)
     }
   }
 
@@ -104,16 +116,31 @@ export class ExportForm {
   }
 
   async exportVideo(options: VideoExport) {
-    console.log("Exporting...")
-    const player = this.player!;
-    const canvas = player.container?.nativeElement.getElementsByTagName('canvas')[0];
+    if (!this.canvas) {
+      return;
+    }
 
-    options.duration = player.duration;
+    options.duration = this.player.duration;
 
-    player.resize(options.width, options.height);
-    player.goToAndPlay(0)
+    this.player.resize(options.width, options.height);
+    this.player.goToAndPlay(0)
 
-    const blob = await record(canvas!, options)
+    const blob = await record(this.canvas, options)
     download(`video.${options.format.ext}`, blob);
+  }
+
+  async exportImage(options: ImageExport) {
+    if (!this.canvas) {
+      return;
+    }
+    this.player.resize(options.width, options.height);
+    const blob = await canvasToBlob(this.canvas, options.format.value, options.quality)
+    download(`image.${options.format.ext}`, blob);
+  }
+
+  onQuality(event: Event) {
+    let value = parseFloat((event.target as HTMLInputElement).value);
+    console.log(value);
+    (this.selectedExport as ImageExport).quality = value;
   }
 }

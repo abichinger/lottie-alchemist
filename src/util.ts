@@ -61,3 +61,14 @@ export function download(filename: string, blob: Blob) {
   a.click();
   window.URL.revokeObjectURL(url);
 }
+
+export function canvasToBlob(canvas: HTMLCanvasElement, type?: string, quality?: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return reject('failed to create image')
+      }
+      resolve(blob);
+    }, type, quality)
+  })
+}

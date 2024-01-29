@@ -26,5 +26,15 @@
     </mat-form-field>
   </span>
 
+  <span *ngIf="isImageExport(selectedExport)">
+    <div *ngIf="selectedExport.quality != undefined" class="w-full">
+      <mat-label>Quality</mat-label>
+      <mat-slider min="0" max="1" step="0.05" class="w-full">
+        <input matSliderThumb [value]="selectedExport.quality" (input)="onQuality($event)">
+      </mat-slider>
+    </div>
+
+  </span>
+
   <button mat-raised-button (click)="submit()">Export</button>
 </p>

@@ -76,7 +76,6 @@ export class LottiePlayer implements OnInit {
   onSliderValue(event: Event) {
     let value = parseInt((event.target as HTMLInputElement).value)
 
-    console.log(value)
     if (!this._animation) {
       return
     }
