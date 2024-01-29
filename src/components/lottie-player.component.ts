@@ -5,6 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import Lottie, { AnimationItem } from "lottie-web";
 
+export interface AnimationData {
+  v: string,
+  fr: number,
+  w: number,
+  h: number,
+}
 
 @Component({
   selector: 'lottie-player',
@@ -19,9 +25,9 @@ export class LottiePlayer implements OnInit {
   _speedIndex = 0;
   get speed() { return this._speeds[this._speedIndex] }
 
-  _animationData?: string
+  private _animationData?: AnimationData
   get animationData() { return this._animationData };
-  @Input() set animationData(value: string | undefined) {
+  @Input() set animationData(value: AnimationData | undefined) {
     this._animationData = value;
     this.loadAnimation()
   }
@@ -32,9 +38,11 @@ export class LottiePlayer implements OnInit {
 
   private _animation?: AnimationItem;
 
-  get duration() { return (this._animation?.getDuration() ?? 1) / (this._animation?.playSpeed ?? 1) };
-  get totalFrames() { return this._animation?.totalFrames ?? 100 };
-  get currentFrame() { return this._animation?.currentFrame ?? 0 };
+  get duration() { return (this._animation?.getDuration() ?? 1) / (this._animation?.playSpeed ?? 1) }
+  get totalFrames() { return this._animation?.totalFrames ?? 100 }
+  get currentFrame() { return this._animation?.currentFrame ?? 0 }
+  get animationWidth() { return this.animationData?.w ?? 1280 }
+  get animationHeight() { return this.animationData?.h ?? 720 }
 
   ngOnInit(): void {
     this.loadAnimation()
@@ -52,12 +60,13 @@ export class LottiePlayer implements OnInit {
       renderer: 'canvas',
       loop: true,
       autoplay: true,
-      animationData: JSON.parse(this.animationData),
+      animationData: this._animationData,
       rendererSettings: {
         preserveAspectRatio: 'xMidYMid meet',
       },
       // path: 'https://000035970.codepen.website/data.json'
     });
+    this.resize();
   }
 
   isPaused() {
@@ -88,8 +97,11 @@ export class LottiePlayer implements OnInit {
 
   }
 
-  resize(width: number, height: number) {
-    (this._animation as any).resize(width, height)
+  resize(width?: number, height?: number) {
+    const resizeWidth = width ?? this.animationWidth;
+    const resizeHeight = height ?? this.animationHeight;
+
+    (this._animation as any).resize(resizeWidth, resizeHeight)
   }
 
   goToAndPlay(frame: number) {

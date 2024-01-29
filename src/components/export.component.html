@@ -17,12 +17,14 @@
 
   <mat-form-field class="w-full">
     <mat-label>Width</mat-label>
-    <input matInput type="number" [(ngModel)]="selectedExport.width">
+    <input matInput type="number" [ngModel]="selectedExport.width ?? animationWidth"
+      (ngModelChange)="selectedExport.width = $event">
   </mat-form-field>
 
   <mat-form-field class="w-full">
     <mat-label>Height</mat-label>
-    <input matInput type="number" [(ngModel)]="selectedExport.height">
+    <input matInput type="number" [ngModel]="selectedExport.height ?? animationHeight"
+      (ngModelChange)="selectedExport.height = $event">
   </mat-form-field>
 
   <span *ngIf="isVideoExport(selectedExport)">

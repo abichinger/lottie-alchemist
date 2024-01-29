@@ -1,7 +1,7 @@
 <style>
 </style>
 
-<main class="main">
+<main class="main max-h-full">
   <mat-toolbar>
     <span>{{ title }}</span>
 
@@ -22,7 +22,7 @@
 
   </mat-toolbar>
 
-  <div [ngClass]="{'hidden': !animationLoaded}" class="mt-16 container mx-auto">
+  <div [ngClass]="{'hidden': !animationLoaded}" class="mt-16 mb-16 container mx-auto">
     <mat-card [ngClass]="{'hidden': !animationLoaded}">
       <mat-card-content><lottie-player #player [animationData]="animationData" /></mat-card-content>
     </mat-card>

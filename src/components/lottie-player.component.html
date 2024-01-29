@@ -6,12 +6,12 @@
 
 <div class="container relative min-h-32 mx-auto">
 
-  <div #container></div>
+  <div #container class="aspect-video w-full"></div>
 
   <div class="absolute bottom-0 right-10 left-10">
     <div class="control-slider">
       <mat-slider min="1" [max]="totalFrames" step="1">
-        <input matSliderThumb [value]="currentFrame+1" (input)="onSliderValue($event)" >
+        <input matSliderThumb [value]="currentFrame+1" (input)="onSliderValue($event)">
       </mat-slider>
     </div>
     <div class="flex justify-between">

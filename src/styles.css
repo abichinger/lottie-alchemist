@@ -9,3 +9,7 @@ body {
   height: 100%;
   background-color: #ccc;
 }
+
+canvas {
+  object-fit: contain;
+}

@@ -23,8 +23,8 @@ export class Format {
 
 interface ExportOptions {
   format: Format,
-  width: number,
-  height: number,
+  width?: number,
+  height?: number,
 }
 
 export interface VideoExport extends ExportOptions {
@@ -41,16 +41,12 @@ export interface ImageExport extends ExportOptions {
 const videoExports: VideoExport[] = [
   {
     format: new Format('webm', 'video/webm', 'webm'),
-    width: 500,
-    height: 500,
     duration: 1,
     fps: 25,
     codecs: 'vp9'
   },
   {
     format: new Format('mp4 (H.264)', 'video/mp4', 'mp4'),
-    width: 600,
-    height: 600,
     duration: 1,
     fps: 25,
     codecs: 'avc1.4d002a'
@@ -60,16 +56,17 @@ const videoExports: VideoExport[] = [
 const imageExports: ImageExport[] = [
   {
     format: new Format('png', 'image/png', 'png'),
-    width: 200,
-    height: 200,
   },
   {
     format: new Format('jpeg', 'image/jpeg', 'jpeg'),
-    width: 200,
-    height: 200,
     quality: 0.95
   },
 ]
+
+const exports: ExportOptions[] = [
+  ...videoExports,
+  ...imageExports
+];
 
 @Component({
   selector: 'export-form',
@@ -81,18 +78,22 @@ export class ExportForm {
 
   @Input({ required: true }) player!: LottiePlayer;
 
-  exports: ExportOptions[] = [
-    ...videoExports,
-    ...imageExports
-  ];
+  exports: ExportOptions[];
   selectedExport: ExportOptions;
 
   constructor() {
+    this.exports = JSON.parse(JSON.stringify(exports))
     this.selectedExport = this.exports[0];
   }
 
   get canvas() {
-    return this.player?.container?.nativeElement.getElementsByTagName('canvas')[0];
+    return this.player.container?.nativeElement.getElementsByTagName('canvas')[0];
+  }
+  get animationWidth() {
+    return this.player.animationWidth
+  }
+  get animationHeight() {
+    return this.player.animationHeight
   }
 
   selectFormat(value: string) {

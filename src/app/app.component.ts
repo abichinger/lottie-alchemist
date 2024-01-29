@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { ExportForm } from '../components/export.component';
-import { LottiePlayer } from '../components/lottie-player.component';
+import { AnimationData, LottiePlayer } from '../components/lottie-player.component';
 import { readAsText } from '../util';
 
 class ExportDialogData {
@@ -23,7 +23,7 @@ class ExportDialogData {
 })
 export class AppComponent {
   title = 'lottie-alchemist';
-  animationData?: string;
+  animationData?: AnimationData;
 
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
   @ViewChild('player') player?: LottiePlayer;
@@ -38,7 +38,8 @@ export class AppComponent {
       return;
     }
 
-    this.animationData = await readAsText(input);
+    const text = await readAsText(input);
+    this.animationData = JSON.parse(text)
   }
 
   openExportDialog() {
