@@ -17,7 +17,7 @@ class ExportDialogData {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatButton, LottiePlayer, MatIconModule, MatButtonModule, MatToolbarModule, NgClass],
+  imports: [RouterOutlet, MatButton, LottiePlayer, MatIconModule, MatButtonModule, MatToolbarModule, NgClass, MatCardModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -56,8 +56,10 @@ export class AppComponent {
   selector: 'export-dialog',
   template: `
   <mat-card>
-    <mat-card-header><h2>Export As</h2></mat-card-header>
-    <mat-card-content><export-form [player]="data.player" /></mat-card-content>
+    <mat-card-content>
+      <h2 class="mb-5">Export as</h2>
+      <export-form [player]="data.player" />
+    </mat-card-content>
   </mat-card>
   `,
   standalone: true,

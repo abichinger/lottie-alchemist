@@ -138,6 +138,15 @@ export class ExportForm {
     download(`image.${options.format.ext}`, blob);
   }
 
+  get quality() {
+    return (this.selectedExport as ImageExport).quality
+  }
+
+  get qualityPercentage() {
+    const quality = this.quality ?? 0;
+    return (quality * 100).toFixed(0)
+  }
+
   onQuality(event: Event) {
     let value = parseFloat((event.target as HTMLInputElement).value);
     console.log(value);
