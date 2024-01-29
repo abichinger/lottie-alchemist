@@ -1,0 +1,30 @@
+<p>
+
+  <mat-form-field class="w-full">
+    <mat-label>Format</mat-label>
+    <mat-select [value]="selectedExport.format.value" (valueChange)="selectFormat($event)">
+      @for (export of exports; track export) {
+      <mat-option [value]="export.format.value">{{export.format.text}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>Width</mat-label>
+    <input matInput type="number" [(ngModel)]="selectedExport.width">
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>Height</mat-label>
+    <input matInput type="number" [(ngModel)]="selectedExport.height">
+  </mat-form-field>
+
+  <span *ngIf="isVideoExport(selectedExport)">
+    <mat-form-field class="w-full">
+      <mat-label>FPS</mat-label>
+      <input matInput type="number" [(ngModel)]="selectedExport.fps">
+    </mat-form-field>
+  </span>
+
+  <button mat-raised-button (click)="submit()">Export</button>
+</p>
