@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
-import { canvasToBlob, download, record } from "../util";
+import { canvasToBlob, download, encodeGif, record } from "../util";
 import { LottiePlayer } from "./lottie-player.component";
 
 export class Format {
@@ -38,19 +38,29 @@ export interface ImageExport extends ExportOptions {
   quality?: number
 }
 
+export interface GifExport extends ExportOptions {
+  fps: number,
+}
+
 const videoExports: VideoExport[] = [
   {
-    format: new Format('webm', 'video/webm', 'webm'),
+    format: new Format('webm (VP9)', 'video/webm', 'webm'),
     duration: 1,
     fps: 25,
     codecs: 'vp9'
   },
   {
-    format: new Format('mp4 (H.264)', 'video/mp4', 'mp4'),
+    format: new Format('mkv (H.264)', 'video/x-matroska', 'mkv'),
     duration: 1,
     fps: 25,
-    codecs: 'avc1.4d002a'
+    codecs: 'h264'
   },
+  // {
+  //   format: new Format('mkv (AV1)', 'video/x-matroska', 'mkv'),
+  //   duration: 1,
+  //   fps: 25,
+  //   codecs: 'av1'
+  // },
 ]
 
 const imageExports: ImageExport[] = [
@@ -63,9 +73,15 @@ const imageExports: ImageExport[] = [
   },
 ]
 
+const gifExport: GifExport = {
+  format: new Format('gif', 'image/gif', 'gif'),
+  fps: 30,
+}
+
 const exports: ExportOptions[] = [
   ...videoExports,
-  ...imageExports
+  gifExport,
+  ...imageExports,
 ];
 
 @Component({
@@ -96,27 +112,35 @@ export class ExportForm {
     return this.player.animationHeight
   }
 
-  selectFormat(value: string) {
-    this.selectedExport = this.exports.find((e) => e.format.value == value) ?? this.selectedExport;
+  selectFormat(text: string) {
+    console.log(text)
+    this.selectedExport = this.exports.find((e) => e.format.text == text) ?? this.selectedExport;
   }
 
   submit() {
     if (this.isVideoExport(this.selectedExport)) {
       this.exportVideo(this.selectedExport)
-    } else {
+    } else if (this.isImageExport(this.selectedExport)) {
       this.exportImage(this.selectedExport)
+    } else if (this.isGifExport(this.selectedExport)) {
+      this.exportGif(this.selectedExport)
     }
   }
 
-  isVideoExport(e: VideoExport | ImageExport): e is VideoExport {
-    return (e as VideoExport).fps !== undefined;
+  isVideoExport(e: VideoExport | ImageExport | GifExport): e is VideoExport {
+    return (e as any).codecs !== undefined;
   }
 
-  isImageExport(e: VideoExport | ImageExport): e is ImageExport {
-    return (e as VideoExport).fps == undefined;
+  isImageExport(e: VideoExport | ImageExport | GifExport): e is ImageExport {
+    return (e as any).fps === undefined;
+  }
+
+  isGifExport(e: VideoExport | ImageExport | GifExport): e is GifExport {
+    return (e as any).fps !== undefined && (e as any).codecs === undefined;
   }
 
   async exportVideo(options: VideoExport) {
+    console.log(options)
     if (!this.canvas) {
       return;
     }
@@ -136,6 +160,15 @@ export class ExportForm {
     }
     this.player.resize(options.width, options.height);
     const blob = await canvasToBlob(this.canvas, options.format.value, options.quality)
+    download(`image.${options.format.ext}`, blob);
+  }
+
+  async exportGif(options: GifExport) {
+    if (!this.canvas || !this.player.animation) {
+      return;
+    }
+    this.player.resize(options.width, options.height);
+    const blob = await encodeGif(this.canvas, this.player.animation, options.fps)
     download(`image.${options.format.ext}`, blob);
   }
 

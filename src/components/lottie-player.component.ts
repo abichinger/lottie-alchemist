@@ -37,6 +37,7 @@ export class LottiePlayer implements OnInit {
   @ViewChild('container') container?: ElementRef<HTMLDivElement>;
 
   private _animation?: AnimationItem;
+  get animation() { return this._animation }
 
   get duration() { return (this._animation?.getDuration() ?? 1) / (this._animation?.playSpeed ?? 1) }
   get totalFrames() { return this._animation?.totalFrames ?? 100 }

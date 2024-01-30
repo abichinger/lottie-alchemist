@@ -8,9 +8,9 @@
 
   <mat-form-field class="w-full">
     <mat-label>Format</mat-label>
-    <mat-select [value]="selectedExport.format.value" (valueChange)="selectFormat($event)">
+    <mat-select [value]="selectedExport.format.text" (valueChange)="selectFormat($event)">
       @for (export of exports; track export) {
-      <mat-option [value]="export.format.value">{{export.format.text}}</mat-option>
+      <mat-option [value]="export.format.text">{{export.format.text}}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -48,6 +48,13 @@
       </mat-slider>
     </div>
 
+  </span>
+
+  <span *ngIf="isGifExport(selectedExport)">
+    <mat-form-field class="w-full">
+      <mat-label>FPS</mat-label>
+      <input matInput type="number" [(ngModel)]="selectedExport.fps">
+    </mat-form-field>
   </span>
 
   <button mat-raised-button color="primary" (click)="submit()">Export</button>

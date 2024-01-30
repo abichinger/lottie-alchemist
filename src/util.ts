@@ -1,3 +1,5 @@
+import { GIFEncoder, applyPalette, quantize } from 'gifenc';
+import { AnimationItem } from "lottie-web";
 import { VideoExport } from "./components/export.component";
 
 export function readAsText(input: HTMLInputElement): Promise<string> {
@@ -28,6 +30,7 @@ export function record(canvas: HTMLCanvasElement, options: VideoExport): Promise
     const recordedChunks: BlobPart[] = [];
 
     const recorderOptions = { mimeType: `${options.format.value}; codecs="${options.codecs}"` };
+    console.log(recorderOptions)
     const recorder = new MediaRecorder(stream, recorderOptions);
 
     function handleDataAvailable(event: BlobEvent) {
@@ -50,7 +53,6 @@ export function record(canvas: HTMLCanvasElement, options: VideoExport): Promise
   });
 }
 
-
 export function download(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -71,4 +73,31 @@ export function canvasToBlob(canvas: HTMLCanvasElement, type?: string, quality?:
       resolve(blob);
     }, type, quality)
   })
+}
+
+// https://github.com/mattdesl/gifenc/blob/64842fca317b112a8590f8fef2bf3825da8f6fe3/test/encode_web.html#L42
+export async function encodeGif(canvas: HTMLCanvasElement, animation: AnimationItem, fps?: number): Promise<Blob> {
+  const context = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const format = "rgb444";
+
+  fps = fps ?? 30;
+  const delay = (1 / fps) * 1000;
+
+  const gif = GIFEncoder();
+
+  for (let i = 0; i < animation.totalFrames; i++) {
+    animation.goToAndStop(i, true);
+
+    const data = context!.getImageData(0, 0, width, height).data;
+    const palette = quantize(data, 256, { format });
+    const bitmap = applyPalette(data, palette, format);
+    gif.writeFrame(bitmap, width, height, { palette, delay });
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+  }
+
+  gif.finish();
+  return new Blob([gif.bytesView()], { type: 'image/gif' })
 }
