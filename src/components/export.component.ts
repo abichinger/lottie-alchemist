@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { canvasToBlob, download, encodeGif, record } from "../util";
@@ -87,7 +88,7 @@ const exports: ExportOptions[] = [
 @Component({
   selector: 'export-form',
   standalone: true,
-  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf, MatSliderModule],
+  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf, MatSliderModule, MatProgressSpinnerModule],
   templateUrl: './export.component.html',
 })
 export class ExportForm {
@@ -96,6 +97,9 @@ export class ExportForm {
 
   exports: ExportOptions[];
   selectedExport: ExportOptions;
+
+  private _exporting: boolean = false;
+  get exporting() { return this._exporting }
 
   constructor() {
     this.exports = JSON.parse(JSON.stringify(exports))
@@ -117,14 +121,20 @@ export class ExportForm {
     this.selectedExport = this.exports.find((e) => e.format.text == text) ?? this.selectedExport;
   }
 
-  submit() {
-    if (this.isVideoExport(this.selectedExport)) {
-      this.exportVideo(this.selectedExport)
-    } else if (this.isImageExport(this.selectedExport)) {
-      this.exportImage(this.selectedExport)
-    } else if (this.isGifExport(this.selectedExport)) {
-      this.exportGif(this.selectedExport)
+  async submit() {
+    this._exporting = true;
+    try {
+      if (this.isVideoExport(this.selectedExport)) {
+        await this.exportVideo(this.selectedExport)
+      } else if (this.isImageExport(this.selectedExport)) {
+        await this.exportImage(this.selectedExport)
+      } else if (this.isGifExport(this.selectedExport)) {
+        await this.exportGif(this.selectedExport)
+      }
+    } catch (err) {
+      console.error(err)
     }
+    this._exporting = false;
   }
 
   isVideoExport(e: VideoExport | ImageExport | GifExport): e is VideoExport {
