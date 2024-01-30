@@ -30,11 +30,9 @@ export function record(canvas: HTMLCanvasElement, options: VideoExport): Promise
     const recordedChunks: BlobPart[] = [];
 
     const recorderOptions = { mimeType: `${options.format.value}; codecs="${options.codecs}"` };
-    console.log(recorderOptions)
     const recorder = new MediaRecorder(stream, recorderOptions);
 
     function handleDataAvailable(event: BlobEvent) {
-      console.log("data-available");
       if (event.data.size > 0) {
         recordedChunks.push(event.data);
         const blob = new Blob(recordedChunks, { type: options.format.value });

@@ -117,7 +117,6 @@ export class ExportForm {
   }
 
   selectFormat(text: string) {
-    console.log(text)
     this.selectedExport = this.exports.find((e) => e.format.text == text) ?? this.selectedExport;
   }
 
@@ -150,7 +149,6 @@ export class ExportForm {
   }
 
   async exportVideo(options: VideoExport) {
-    console.log(options)
     if (!this.canvas) {
       return;
     }
@@ -193,7 +191,6 @@ export class ExportForm {
 
   onQuality(event: Event) {
     let value = parseFloat((event.target as HTMLInputElement).value);
-    console.log(value);
     (this.selectedExport as ImageExport).quality = value;
   }
 }
