@@ -68,14 +68,16 @@ export function canvasToBlob(canvas: HTMLCanvasElement, type?: string, quality?:
 }
 
 // https://github.com/mattdesl/gifenc/blob/64842fca317b112a8590f8fef2bf3825da8f6fe3/test/encode_web.html#L42
-export async function encodeGif(canvas: HTMLCanvasElement, animation: AnimationItem, fps?: number): Promise<Blob> {
+export async function encodeGif(canvas: HTMLCanvasElement, animation: AnimationItem, fps?: number, transparent?: boolean): Promise<Blob> {
   const context = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
-  const format = "rgb444";
 
+  transparent = transparent ?? false;
   fps = fps ?? 30;
   const delay = (1 / fps) * 1000;
+
+  const format = transparent ? "rgba4444" : "rgb444";
 
   const gif = GIFEncoder();
 
@@ -85,7 +87,14 @@ export async function encodeGif(canvas: HTMLCanvasElement, animation: AnimationI
     const data = context!.getImageData(0, 0, width, height).data;
     const palette = quantize(data, 256, { format });
     const bitmap = applyPalette(data, palette, format);
-    gif.writeFrame(bitmap, width, height, { palette, delay });
+
+    // https://github.com/mattdesl/looom-tools/blob/a9f455eeab3e43af6775e903cfafe6e9568dea4d/site/components/gifworker.js#L60
+    let transparentIndex = 0;
+    if (transparent) {
+      transparentIndex = palette.findIndex((p) => p[3] === 0);
+    }
+
+    gif.writeFrame(bitmap, width, height, { palette, delay, transparent, transparentIndex });
 
     await new Promise(resolve => setTimeout(resolve, 0));
   }

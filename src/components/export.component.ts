@@ -2,6 +2,7 @@ import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -41,6 +42,7 @@ export interface ImageExport extends ExportOptions {
 
 export interface GifExport extends ExportOptions {
   fps: number,
+  transparent: boolean
 }
 
 const videoExports: VideoExport[] = [
@@ -77,6 +79,7 @@ const imageExports: ImageExport[] = [
 const gifExport: GifExport = {
   format: new Format('gif', 'image/gif', 'gif'),
   fps: 30,
+  transparent: false,
 }
 
 const exports: ExportOptions[] = [
@@ -88,7 +91,7 @@ const exports: ExportOptions[] = [
 @Component({
   selector: 'export-form',
   standalone: true,
-  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf, MatSliderModule, MatProgressSpinnerModule],
+  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatButtonModule, FormsModule, NgIf, MatSliderModule, MatProgressSpinnerModule, MatCheckboxModule],
   templateUrl: './export.component.html',
 })
 export class ExportForm {
@@ -176,7 +179,7 @@ export class ExportForm {
       return;
     }
     this.player.resize(options.width, options.height);
-    const blob = await encodeGif(this.canvas, this.player.animation, options.fps)
+    const blob = await encodeGif(this.canvas, this.player.animation, options.fps, options.transparent)
     download(`image.${options.format.ext}`, blob);
   }
 
