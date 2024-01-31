@@ -1,5 +1,5 @@
 import { NgIf } from "@angular/common";
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from "@angular/core";
 import { MatFabButton } from "@angular/material/button";
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
@@ -18,19 +18,13 @@ export interface AnimationData {
   standalone: true,
   imports: [MatFabButton, MatIconModule, NgIf, MatSliderModule]
 })
-export class LottiePlayer implements OnInit {
+export class LottiePlayer implements AfterViewInit {
   @Input() autoplay = true;
+  @Input() animationData!: AnimationData;
 
   _speeds = [1, 1.5, 2, 2.5, 0.5];
   _speedIndex = 0;
   get speed() { return this._speeds[this._speedIndex] }
-
-  private _animationData?: AnimationData
-  get animationData() { return this._animationData };
-  @Input() set animationData(value: AnimationData | undefined) {
-    this._animationData = value;
-    this.loadAnimation()
-  }
 
   @Output() animationCreated = new EventEmitter<AnimationItem>();
 
@@ -42,32 +36,52 @@ export class LottiePlayer implements OnInit {
   get duration() { return (this._animation?.getDuration() ?? 1) / (this._animation?.playSpeed ?? 1) }
   get totalFrames() { return this._animation?.totalFrames ?? 100 }
   get currentFrame() { return this._animation?.currentFrame ?? 0 }
-  get animationWidth() { return this.animationData?.w ?? 1280 }
-  get animationHeight() { return this.animationData?.h ?? 720 }
+  get animationWidth() { return this.animationData.w ?? 1280 }
+  get animationHeight() { return this.animationData.h ?? 720 }
 
-  ngOnInit(): void {
+  get canvas() {
+    return this.container?.nativeElement.getElementsByTagName('canvas')[0];
+  }
+
+  ngAfterViewInit(): void {
     this.loadAnimation()
   }
 
   loadAnimation() {
     this._animation?.destroy()
 
-    if (!this.animationData) {
-      return;
-    }
-
     this._animation = Lottie.loadAnimation({
       container: this.container!.nativeElement,
       renderer: 'canvas',
       loop: true,
       autoplay: true,
-      animationData: this._animationData,
+      animationData: this.animationData,
       rendererSettings: {
         preserveAspectRatio: 'xMidYMid meet',
+        clearCanvas: false,
       },
       // path: 'https://000035970.codepen.website/data.json'
     });
     this.resize();
+
+    this._animation.addEventListener('enterFrame', (event) => {
+      const canvas = this.canvas;
+      if (!canvas) {
+        return;
+      }
+
+      const context = canvas.getContext('2d');
+      if (!context) {
+        return;
+      }
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      // TODO: add background color
+      // https://www.npmjs.com/package/ngx-color-picker
+      // context.fillStyle = "red";
+      // context.fillRect(0, 0, canvas.width, canvas.height);
+    })
   }
 
   isPaused() {

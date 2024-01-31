@@ -110,7 +110,7 @@ export class ExportForm {
   }
 
   get canvas() {
-    return this.player.container?.nativeElement.getElementsByTagName('canvas')[0];
+    return this.player.canvas;
   }
   get animationWidth() {
     return this.player.animationWidth

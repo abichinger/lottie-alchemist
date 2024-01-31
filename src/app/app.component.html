@@ -43,8 +43,8 @@
       <button mat-raised-button color="primary" (click)="fileInput.click()">Choose Lottie</button>
     </div>
 
-    <div [ngClass]="{'hidden': !animationLoaded}">
-      <mat-card [ngClass]="{'hidden': !animationLoaded}">
+    <div *ngIf="animationData">
+      <mat-card>
         <mat-card-content><lottie-player #player [animationData]="animationData" /></mat-card-content>
       </mat-card>
     </div>
