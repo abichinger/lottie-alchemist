@@ -2,14 +2,8 @@ import { GIFEncoder, applyPalette, quantize } from 'gifenc';
 import { AnimationItem } from "lottie-web";
 import { VideoExport } from "./components/export.component";
 
-export function readAsText(input: HTMLInputElement): Promise<string> {
+export function readAsText(file: File): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    let files = input.files;
-    if (!files || files.length == 0) {
-      return reject('no files found');
-    }
-    let file = files[0];
-
     var reader = new FileReader();
     reader.onload = (e) => {
       let text = e.target?.result;

@@ -1,5 +1,5 @@
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -17,12 +17,12 @@ class ExportDialogData {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatButton, LottiePlayer, MatIconModule, MatButtonModule, MatToolbarModule, NgClass, MatCardModule],
+  imports: [RouterOutlet, MatButton, LottiePlayer, MatIconModule, MatButtonModule, MatToolbarModule, NgClass, MatCardModule, NgIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'lottie-alchemist';
+  title = 'Lottie Alchemist';
   animationData?: AnimationData;
 
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
@@ -32,13 +32,22 @@ export class AppComponent {
 
   get animationLoaded() { return !!this.animationData }
 
-  async loadAnimationData() {
+  onInput() {
     let input = this.fileInput?.nativeElement;
     if (!input) {
       return;
     }
 
-    const text = await readAsText(input);
+    this.loadAnimationData(input.files ?? undefined);
+  }
+
+  async loadAnimationData(files?: FileList) {
+    if (!files || files.length == 0) {
+      return;
+    }
+    let file = files[0];
+
+    const text = await readAsText(file);
     this.animationData = JSON.parse(text)
   }
 
@@ -51,6 +60,27 @@ export class AppComponent {
     dialogRef.closed.subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+
+  reset() {
+    this.animationData = undefined;
+    const input = this.fileInput?.nativeElement;
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+  onDrop(event: DragEvent) {
+    console.log('drop')
+    event.preventDefault();
+
+    this.loadAnimationData(event.dataTransfer?.files)
+  }
+
+  onDragOver(event: DragEvent) {
+    event.stopPropagation();
+    event.preventDefault();
   }
 }
 @Component({

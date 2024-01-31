@@ -1,4 +1,7 @@
 <style>
+  .upload-icon {
+    transform: scale(3);
+  }
 </style>
 
 <main class="main max-h-full">
@@ -8,7 +11,7 @@
     <span class="ml-5">
       <!-- https://github.com/angular/components/issues/3262#issuecomment-309000588 -->
       <button mat-raised-button color="primary" (click)="fileInput.click()">Choose Lottie</button>
-      <input hidden type="file" accept=".json" #fileInput (change)="loadAnimationData()" />
+      <input hidden type="file" accept=".json" #fileInput (change)="onInput()" />
     </span>
 
     <div class="flex-auto"></div>
@@ -22,10 +25,41 @@
 
   </mat-toolbar>
 
-  <div [ngClass]="{'hidden': !animationLoaded}" class="mt-16 mb-16 container mx-auto">
-    <mat-card [ngClass]="{'hidden': !animationLoaded}">
-      <mat-card-content><lottie-player #player [animationData]="animationData" /></mat-card-content>
-    </mat-card>
+  <div class="font-sans container mx-auto mt-16 mb-16 max-w-3xl p-3 md:p-10">
+
+    <h1 class="md:text-5xl text-2xl text-center text-gray-800 font-medium mb-5">{{ title }}</h1>
+
+    <p class="text-gray-600 text-center mb-10">
+      Lottie Alchemist is a web based tool to convert Lottie animations into GIFs or Videos. It is also possible to
+      export single frames as PNG or JPEG.
+    </p>
+
+    <div *ngIf="!animationLoaded" class="text-center border-4 border-dashed rounded-2xl border-gray-500 md:mx-20 py-10"
+      (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+      <mat-icon class="text-gray-500 upload-icon m-5">upload_file</mat-icon>
+      <p class="text-gray-500 text-sm mb-5">Lottie JSON</p>
+      <p class="text-gray-600 text-lg">Drag & drop file</p>
+      <p class="text-gray-500 text-sm my-1">or</p>
+      <button mat-raised-button color="primary" (click)="fileInput.click()">Choose Lottie</button>
+    </div>
+
+    <div [ngClass]="{'hidden': !animationLoaded}">
+      <mat-card [ngClass]="{'hidden': !animationLoaded}">
+        <mat-card-content><lottie-player #player [animationData]="animationData" /></mat-card-content>
+      </mat-card>
+    </div>
+
+    <div *ngIf="animationLoaded" class="flex mt-5">
+      <div class="flex-auto"></div>
+      <button mat-raised-button (click)="reset()" class="mr-3">
+        Close file
+      </button>
+      <button mat-raised-button color="primary" (click)="openExportDialog()">
+        Export as
+      </button>
+    </div>
+
+
   </div>
 
 </main>
