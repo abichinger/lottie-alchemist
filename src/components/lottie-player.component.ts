@@ -4,6 +4,7 @@ import { MatMiniFabButton } from "@angular/material/button";
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import Lottie, { AnimationItem } from "lottie-web";
+import { ColorPickerModule } from 'ngx-color-picker';
 
 export interface AnimationData {
   v: string,
@@ -16,11 +17,13 @@ export interface AnimationData {
   selector: 'lottie-player',
   templateUrl: './lottie-player.component.html',
   standalone: true,
-  imports: [MatMiniFabButton, MatIconModule, NgIf, MatSliderModule]
+  imports: [MatMiniFabButton, MatIconModule, NgIf, MatSliderModule, ColorPickerModule]
 })
 export class LottiePlayer implements AfterViewInit {
   @Input() autoplay = true;
   @Input() animationData!: AnimationData;
+
+  backgroundColor: string = 'rgba(255,255,255,0)';
 
   _speeds = [1, 1.5, 2, 2.5, 0.5];
   _speedIndex = 0;
@@ -80,11 +83,8 @@ export class LottiePlayer implements AfterViewInit {
       }
 
       context.clearRect(0, 0, canvas.width, canvas.height);
-
-      // TODO: add background color
-      // https://www.npmjs.com/package/ngx-color-picker
-      // context.fillStyle = "red";
-      // context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = this.backgroundColor;
+      context.fillRect(0, 0, canvas.width, canvas.height);
     })
   }
 

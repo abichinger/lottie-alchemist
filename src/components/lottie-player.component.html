@@ -16,22 +16,24 @@
     </div>
     <div class="flex justify-between">
       <div>
-        <button mat-mini-fab (click)="togglePause()">
+        <button class="align-middle" mat-mini-fab (click)="togglePause()">
           <mat-icon *ngIf="isPaused() == true; else pauseIcon">play_arrow</mat-icon>
           <ng-template #pauseIcon><mat-icon>pause</mat-icon></ng-template>
         </button>
-        <span class="bg-gray-400 rounded-full px-4 py-1 align-super ml-3 font-mono">
+        <span class="bg-gray-400 rounded-full px-4 py-1 align-middle ml-3 font-mono">
           <pre class="inline">{{currentFrameStr}}/{{totalFrames}}</pre>
         </span>
       </div>
       <div>
-        <button mat-mini-fab (click)="toggleSpeed()">
-          {{speed}}x
+        <input #colorPicker class="w-0" [(colorPicker)]="backgroundColor" cpOutputFormat="rgba" />
+        <button class="align-middle" mat-mini-fab (click)="colorPicker.click()">
+          <mat-icon>format_color_fill</mat-icon>
+        </button>
+        <button class="ml-3" mat-mini-fab (click)="toggleSpeed()">
+          <span>{{speed}}x</span>
         </button>
       </div>
     </div>
-
-
   </div>
 
 </div>
