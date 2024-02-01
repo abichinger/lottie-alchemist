@@ -16,13 +16,16 @@
     </div>
     <div class="flex justify-between">
       <div>
-        <button mat-fab (click)="togglePause()">
+        <button mat-mini-fab (click)="togglePause()">
           <mat-icon *ngIf="isPaused() == true; else pauseIcon">play_arrow</mat-icon>
           <ng-template #pauseIcon><mat-icon>pause</mat-icon></ng-template>
         </button>
+        <span class="bg-gray-400 rounded-full px-4 py-1 align-super ml-3 font-mono">
+          <pre class="inline">{{currentFrameStr}}/{{totalFrames}}</pre>
+        </span>
       </div>
       <div>
-        <button mat-fab (click)="toggleSpeed()">
+        <button mat-mini-fab (click)="toggleSpeed()">
           {{speed}}x
         </button>
       </div>

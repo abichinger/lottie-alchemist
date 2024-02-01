@@ -4,6 +4,7 @@ import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { ExportForm } from '../components/export.component';
@@ -89,16 +90,29 @@ export class AppComponent {
   <mat-card>
     <mat-card-content>
       <h2 class="mb-5">Export as</h2>
-      <export-form [player]="data.player" />
+      <export-form #exporter [player]="data.player" />
+
+      <span class="flex">
+        <div class="flex-auto"></div>
+        <button mat-raised-button (click)="close()" class="mr-3">Close</button>
+        <button *ngIf="!exporter.exporting" mat-raised-button color="primary" (click)="exporter.submit()">Export</button>
+        <mat-spinner *ngIf="exporter.exporting" diameter="30" class="mx-5"></mat-spinner>
+      </span>
     </mat-card-content>
   </mat-card>
   `,
   standalone: true,
-  imports: [ExportForm, MatCardModule],
+  imports: [ExportForm, MatCardModule, NgIf, MatProgressSpinner, MatButtonModule],
 })
 export class ExportDialog {
+  @ViewChild('exporter') player!: ExportForm;
+
   constructor(
     public dialogRef: DialogRef<string>,
     @Inject(DIALOG_DATA) public data: ExportDialogData,
   ) { }
+
+  close() {
+    this.dialogRef.close();
+  }
 }

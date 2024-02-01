@@ -1,6 +1,6 @@
 import { NgIf } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from "@angular/core";
-import { MatFabButton } from "@angular/material/button";
+import { MatMiniFabButton } from "@angular/material/button";
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import Lottie, { AnimationItem } from "lottie-web";
@@ -16,7 +16,7 @@ export interface AnimationData {
   selector: 'lottie-player',
   templateUrl: './lottie-player.component.html',
   standalone: true,
-  imports: [MatFabButton, MatIconModule, NgIf, MatSliderModule]
+  imports: [MatMiniFabButton, MatIconModule, NgIf, MatSliderModule]
 })
 export class LottiePlayer implements AfterViewInit {
   @Input() autoplay = true;
@@ -35,7 +35,11 @@ export class LottiePlayer implements AfterViewInit {
 
   get duration() { return (this._animation?.getDuration() ?? 1) / (this._animation?.playSpeed ?? 1) }
   get totalFrames() { return this._animation?.totalFrames ?? 100 }
-  get currentFrame() { return this._animation?.currentFrame ?? 0 }
+  get currentFrame() { return Math.ceil(this._animation?.currentFrame ?? 0) }
+  get currentFrameStr() {
+    const targetLength = this.totalFrames.toString().length;
+    return this.currentFrame.toString().padStart(targetLength, ' ')
+  }
   get animationWidth() { return this.animationData.w ?? 1280 }
   get animationHeight() { return this.animationData.h ?? 720 }
 

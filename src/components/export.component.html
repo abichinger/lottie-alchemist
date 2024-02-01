@@ -58,10 +58,4 @@
     <mat-checkbox [(ngModel)]="selectedExport.transparent">Transparent</mat-checkbox>
   </span>
 
-  <span class="flex">
-    <div class="flex-auto"></div>
-    <button *ngIf="!exporting" mat-raised-button color="primary" (click)="submit()">Export</button>
-    <mat-spinner *ngIf="exporting" diameter="30" class="mx-5"></mat-spinner>
-  </span>
-
 </p>

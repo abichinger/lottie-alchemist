@@ -8,12 +8,6 @@
   <mat-toolbar>
     <span>{{ title }}</span>
 
-    <span class="ml-5">
-      <!-- https://github.com/angular/components/issues/3262#issuecomment-309000588 -->
-      <button mat-raised-button color="primary" (click)="fileInput.click()">Choose Lottie</button>
-      <input hidden type="file" accept=".json" #fileInput (change)="onInput()" />
-    </span>
-
     <div class="flex-auto"></div>
 
     <div class="flex-none">
@@ -41,6 +35,7 @@
       <p class="text-gray-500 text-sm mb-5">Lottie JSON</p>
       <p class="text-gray-600 text-lg">Drag & drop file</p>
       <p class="text-gray-500 text-sm my-1">or</p>
+      <input hidden type="file" accept=".json" #fileInput (change)="onInput()" />
       <button mat-raised-button color="primary" (click)="fileInput.click()">Choose Lottie</button>
     </div>
 
